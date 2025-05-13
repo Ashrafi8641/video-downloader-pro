@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ultimate Video Downloader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Download any video from any site. Fast, free, and easy.">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Ultimate Video Downloader</h1>
+    <p>Paste a video URL below and download instantly</p>
+    <input type="url" id="videoURL" placeholder="Enter video URL here" required />
+    <button onclick="startDownload()">Download</button>
+    <p id="status"></p>
+  </div>
+  <script>
+    async function startDownload() {
+      const url = document.getElementById("videoURL").value;
+      document.getElementById("status").innerText = "Downloading...";
+      const response = await fetch("/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        const a = document.createElement("a");
+        a.href = window.URL.createObjectURL(blob);
+        a.download = "video.mp4";
+        a.click();
+        document.getElementById("status").innerText = "Download complete.";
+      } else {
+        const err = await response.json();
+        document.getElementById("status").innerText = "Error: " + err.error;
+      }
+    }
+  </script>
+</body>
+</html>
